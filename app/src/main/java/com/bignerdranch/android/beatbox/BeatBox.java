@@ -28,21 +28,31 @@ public class BeatBox {
     private AssetManager mAssetManager;
     private List<Sound> mSounds = new ArrayList<>();
     private SoundPool mSoundPool;
+    private List<Integer> mStreamIds = new ArrayList<>();
 
     public BeatBox(Context context){
         mAssetManager = context.getAssets();
 
         mSoundPool = new SoundPool(MAX_SOUNDS, AudioManager.STREAM_MUSIC, 0);
         loadSound();
-
     }
 
-    public void play(Sound sound){
+    public void play(Sound sound, float volume){
         Integer soundId = sound.getSoundId();
         if(soundId == null){
             return;
         }
-        mSoundPool.play(soundId, 1.0f, 1.0f, 1,0, 1.0f);
+        Integer id = mSoundPool.play(soundId, volume, volume, 1,0, 1.0f);
+        mStreamIds.add(id);
+        if(mStreamIds.size() > 6){
+            mStreamIds.remove(1);
+        }
+    }
+
+    public void setVolume(float volume){
+        for(Integer id : mStreamIds){
+            mSoundPool.setVolume(id, volume, volume);
+        }
     }
 
     private void loadSound(){
